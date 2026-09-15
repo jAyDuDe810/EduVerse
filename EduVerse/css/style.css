@@ -1,3 +1,121 @@
+:root {
+  --primary-color: #4a90e2;
+  --dark-bg: #1e1e2f;
+  --light-bg: #f4f6f9;
+  --text-color: #333;
+  --white: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: var(--light-bg);
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
+/* Color Themes */
+body.theme-slate { background-color: #0f172a; color: #f8fafc; }
+body.theme-midnight { background-color: #020617; color: #f1f5f9; }
+body.theme-emerald { background-color: #022c22; color: #ecfdf5; }
+body.theme-cyber { background-color: #1e1b4b; color: #fae8ff; }
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: var(--dark-bg);
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.nav-links a {
+  color: var(--white);
+  text-decoration: none;
+}
+
+.hero {
+  text-align: center;
+  padding: 4rem 1rem;
+  background: linear-gradient(135deg, #4a90e2, #50e3c2);
+  color: var(--white);
+}
+
+.hero h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.courses-section, .scanner-section {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.scanner-controls {
+  display: flex;
+  gap: 10px;
+  margin: 1.5rem 0;
+}
+
+.scanner-controls input {
+  padding: 0.6rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  flex: 1;
+}
+
+.status-text {
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.course-card, .scanned-card {
+  background: var(--white);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.scanned-card.reachable {
+  border-left: 5px solid #22c55e;
+}
+
+.scanned-card.blocked {
+  border-left: 5px solid #ef4444;
+}
+
+.badge-online { color: #22c55e; font-weight: bold; display: block; margin-top: 0.5rem; }
+.badge-blocked { color: #ef4444; font-weight: bold; display: block; margin-top: 0.5rem; }
+
 @keyframes flashRedAlert {
   0%, 100% {
     border-color: #ef4444;
@@ -14,13 +132,26 @@
   border: 2px solid #ef4444 !important;
 }
 
-.no-select {
-  user-select: none;
-  -webkit-user-select: none;
+.error-container {
+  text-align: center;
+  padding: 5rem 1rem;
 }
 
-/* Theme Variants */
-body.theme-slate { background-color: #0f172a; color: #f8fafc; }
-body.theme-midnight { background-color: #020617; color: #f1f5f9; }
-body.theme-emerald { background-color: #022c22; color: #ecfdf5; }
-body.theme-cyber { background-color: #1e1b4b; color: #fae8ff; }
+button, .btn {
+  background-color: var(--primary-color);
+  color: var(--white);
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+footer {
+  text-align: center;
+  padding: 1rem;
+  background-color: var(--dark-bg);
+  color: var(--white);
+  margin-top: 2rem;
+}
