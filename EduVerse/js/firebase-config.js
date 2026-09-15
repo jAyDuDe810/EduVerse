@@ -1,15 +1,15 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { 
   getFirestore, 
   collection, 
   doc, 
   setDoc, 
   deleteDoc, 
-  onSnapshot,
+  onSnapshot, 
   updateDoc 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// Cloud Project Credentials[cite: 1]
 const firebaseConfig = {
   apiKey: "AIzaSyBh9psTUL4ThSw1TZbd7hRpBZwCZLOeRHo",
   authDomain: "eduverse-e3cd3.firebaseapp.com",
@@ -21,5 +21,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+
+export const auth = getAuth(app);
 export const db = getFirestore(app);
 export { collection, doc, setDoc, deleteDoc, onSnapshot, updateDoc };
