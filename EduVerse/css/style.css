@@ -1,0 +1,26 @@
+@keyframes flashRedAlert {
+  0%, 100% {
+    border-color: #ef4444;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.8), inset 0 0 10px rgba(239, 68, 68, 0.3);
+  }
+  50% {
+    border-color: #991b1b;
+    box-shadow: 0 0 4px rgba(239, 68, 68, 0.2);
+  }
+}
+
+.animate-flash-red {
+  animation: flashRedAlert 1.2s infinite ease-in-out;
+  border: 2px solid #ef4444 !important;
+}
+
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Theme Variants */
+body.theme-slate { background-color: #0f172a; color: #f8fafc; }
+body.theme-midnight { background-color: #020617; color: #f1f5f9; }
+body.theme-emerald { background-color: #022c22; color: #ecfdf5; }
+body.theme-cyber { background-color: #1e1b4b; color: #fae8ff; }

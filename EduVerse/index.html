@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduVerse - Fun Educational Website Hub</title>
+
+  <!-- Tailwind CSS & Font Awesome Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Custom Application Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="theme-slate min-h-screen flex flex-col font-sans antialiased transition-colors duration-300">
+
+  <!-- TOP HEADER & CONTROLS BAR -->
+  <header class="bg-slate-800/90 backdrop-blur border-b border-slate-700 sticky top-0 z-30 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <div class="flex items-center space-x-3">
+        <div class="bg-indigo-600 text-white p-2.5 rounded-xl shadow-lg">
+          <i class="fa-solid fa-graduation-cap text-xl"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+            EduVerse <span class="text-xs bg-indigo-500/20 text-indigo-400 font-semibold px-2 py-0.5 rounded-full border border-indigo-500/30">Cloud v2.0</span>
+          </h1>
+          <p class="text-xs text-slate-400 hidden sm:block">Educational Website Marketplace & Secure Portal</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <select id="theme-selector" onchange="window.handleThemeChange(this.value)" class="bg-slate-900 border border-slate-700 text-xs text-slate-300 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-indigo-500">
+          <option value="slate">🌑 Dark Slate</option>
+          <option value="midnight">🌌 Midnight</option>
+          <option value="emerald">🌲 Emerald</option>
+          <option value="cyber">🔮 Cyberpunk</option>
+        </select>
+
+        <button id="admin-mode-btn" onclick="window.handleAdminToggle()" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-2 transition-all duration-200 border border-amber-500/30 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20">
+          <i id="admin-lock-icon" class="fa-solid fa-lock"></i>
+          <span id="admin-btn-label">Admin Mode</span>
+        </button>
+
+        <div id="user-profile-badge" class="flex items-center space-x-2 pl-3 border-l border-slate-700"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- BLOCK ALERT BANNER FOR ADMIN -->
+  <div id="org-block-alert-banner" class="hidden bg-red-900/80 border-b border-red-700 text-red-200 px-4 py-3 shadow-lg">
+    <div class="max-w-7xl mx-auto flex items-center justify-between flex-wrap gap-2 text-sm">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-triangle-exclamation text-red-400 text-lg animate-bounce"></i>
+        <span class="font-bold">Organization Network Block Detected:</span>
+        <span id="blocked-sites-count-text">One or more websites are unreachable or blocked by firewall.</span>
+      </div>
+      <button onclick="window.scanWebsitesForOrgBlocks()" class="bg-red-800 hover:bg-red-700 text-white text-xs px-3 py-1.5 rounded-md font-semibold transition">
+        <i class="fa-solid fa-rotate-right mr-1"></i> Re-Scan
+      </button>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- ADMIN PANEL SECTION -->
+    <section id="admin-panel" class="hidden space-y-8">
+      <div class="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-6 shadow-xl">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-bold text-amber-400 flex items-center gap-2">
+            <i class="fa-solid fa-shield-halved"></i> Seller Control Panel & Analytics
+          </h2>
+          <span class="text-xs bg-amber-500 text-slate-900 font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Unlocked</span>
+        </div>
+        <p class="text-sm text-slate-300">Manage educational websites, edit site URLs globally, monitor usage metrics, and handle pending customer requests.</p>
+        <div id="admin-analytics-summary" class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 pt-4 border-t border-amber-500/20"></div>
+      </div>
+
+      <!-- Add New Website Form -->
+      <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl">
+        <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-plus-circle text-indigo-400"></i> Add New Educational Website
+        </h3>
+        
+        <form onsubmit="window.handleAddWebsite(event)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Display Title</label>
+            <input type="text" id="site-title" required placeholder="e.g. Math Academy Playground" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Target Web URL (Includes https://)</label>
+            <input type="url" id="site-url" required placeholder="https://example.com" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Backup Mirror URL (Optional)</label>
+            <input type="url" id="site-mirror-url" placeholder="https://mirror.example.com" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Category</label>
+            <select id="site-category" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+              <option value="Math & Logic">Math & Logic</option>
+              <option value="Science & Space">Science & Space</option>
+              <option value="Coding & Tech">Coding & Tech</option>
+              <option value="Language & Reading">Language & Reading</option>
+              <option value="Games & Puzzles">Games & Puzzles</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">FontAwesome Icon Class</label>
+            <input type="text" id="site-icon" placeholder="fa-calculator" value="fa-globe" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Description</label>
+            <input type="text" id="site-desc" placeholder="Brief summary of what students learn..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+          <div class="md:col-span-2 lg:col-span-3 flex justify-end">
+            <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm px-6 py-2.5 rounded-lg transition shadow-lg flex items-center gap-2">
+              <i class="fa-solid fa-cloud-arrow-up"></i> Publish Website to Cloud
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Catalog & Customer Permissions -->
+      <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl space-y-4">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <h3 class="text-lg font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-list-check text-indigo-400"></i> Active Catalog Management & Live Editing
+          </h3>
+          <button onclick="window.scanWebsitesForOrgBlocks()" class="bg-slate-700 hover:bg-slate-600 text-xs px-3 py-1.5 rounded-lg font-medium transition text-slate-200">
+            <i class="fa-solid fa-network-wired mr-1"></i> Scan Network Restrictions
+          </button>
+        </div>
+        <div id="admin-catalog-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      </div>
+
+      <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl space-y-6">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-user-gear text-indigo-400"></i> Customer Access Permissions (Firebase Sync)
+        </h3>
+        <div id="admin-customers-permissions" class="space-y-6"></div>
+      </div>
+    </section>
+
+    <!-- CUSTOMER PORTAL SECTION -->
+    <section id="customer-portal" class="space-y-8">
+      <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-800 pb-4 gap-4">
+        <div class="flex space-x-2">
+          <button id="tab-my-sites" onclick="window.switchCustomerTab('my-sites')" class="px-4 py-2 rounded-xl text-sm font-semibold transition bg-indigo-600 text-white shadow-md">
+            <i class="fa-solid fa-circle-play mr-2"></i> My Unlocked Websites
+          </button>
+          <button id="tab-store-catalog" onclick="window.switchCustomerTab('store-catalog')" class="px-4 py-2 rounded-xl text-sm font-semibold transition bg-slate-800 text-slate-400 hover:text-white">
+            <i class="fa-solid fa-store mr-2"></i> Store Catalog
+          </button>
+        </div>
+
+        <div class="flex items-center space-x-2 flex-grow max-w-md">
+          <div class="relative w-full">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-xs"></i>
+            <input type="text" id="catalog-search-input" oninput="window.handleSearchFilterChange()" placeholder="Search educational apps..." class="w-full bg-slate-800 border border-slate-700 rounded-xl pl-8 pr-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500">
+          </div>
+          <select id="catalog-category-filter" onchange="window.handleSearchFilterChange()" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-indigo-500">
+            <option value="ALL">All Categories</option>
+            <option value="Math & Logic">Math & Logic</option>
+            <option value="Science & Space">Science & Space</option>
+            <option value="Coding & Tech">Coding & Tech</option>
+            <option value="Language & Reading">Language & Reading</option>
+            <option value="Games & Puzzles">Games & Puzzles</option>
+          </select>
+        </div>
+
+        <div id="customer-identity-notice" class="text-xs text-slate-400 self-end md:self-auto"></div>
+      </div>
+
+      <div id="recent-activity-section" class="hidden bg-slate-800/40 border border-slate-700/60 rounded-2xl p-4">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
+          <i class="fa-solid fa-clock-rotate-left text-indigo-400"></i> Recently Opened
+        </h4>
+        <div id="recent-launches-grid" class="flex gap-3 overflow-x-auto pb-1"></div>
+      </div>
+
+      <div id="view-my-sites" class="space-y-6">
+        <div id="unlocked-sites-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      </div>
+
+      <div id="view-store-catalog" class="hidden space-y-6">
+        <div id="store-catalog-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- EDIT SITE MODAL -->
+  <div id="edit-site-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 sm:p-8 max-w-lg w-full shadow-2xl relative">
+      <button onclick="window.closeEditSiteModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="text-center mb-6">
+        <div class="w-12 h-12 bg-amber-500 text-slate-950 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg font-bold text-xl">
+          <i class="fa-solid fa-pen-to-square"></i>
+        </div>
+        <h3 class="text-xl font-bold text-white">Edit Educational Website</h3>
+      </div>
+      <form onsubmit="window.handleEditSiteSubmit(event)" class="space-y-4">
+        <input type="hidden" id="edit-site-id">
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Display Title</label>
+          <input type="text" id="edit-site-title" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Target Web URL (Includes https://)</label>
+          <input type="url" id="edit-site-url" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Backup Mirror URL</label>
+          <input type="url" id="edit-site-mirror-url" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Category</label>
+            <select id="edit-site-category" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
+              <option value="Math & Logic">Math & Logic</option>
+              <option value="Science & Space">Science & Space</option>
+              <option value="Coding & Tech">Coding & Tech</option>
+              <option value="Language & Reading">Language & Reading</option>
+              <option value="Games & Puzzles">Games & Puzzles</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">FontAwesome Icon</label>
+            <input type="text" id="edit-site-icon" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Description</label>
+          <textarea id="edit-site-desc" rows="2" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500"></textarea>
+        </div>
+        <div class="flex items-center space-x-2 pt-2">
+          <input type="checkbox" id="edit-site-maintenance" class="rounded border-slate-700 text-amber-500 focus:ring-amber-500">
+          <label for="edit-site-maintenance" class="text-xs text-amber-400 font-semibold cursor-pointer">Maintenance Mode</label>
+        </div>
+        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2.5 rounded-lg transition shadow-lg mt-2 text-sm">Save & Publish Changes</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- AUTHENTICATION MODAL -->
+  <div id="auth-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-2xl relative">
+      <button onclick="window.closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+      <div class="text-center mb-6">
+        <div class="w-12 h-12 bg-indigo-600 text-white rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg"><i class="fa-solid fa-user-plus text-xl"></i></div>
+        <h3 class="text-xl font-bold text-white">Sign In / Create Account</h3>
+      </div>
+      <form onsubmit="window.handleAuthSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">First Name</label>
+          <input type="text" id="auth-firstname" required placeholder="John" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Last Name</label>
+          <input type="text" id="auth-lastname" required placeholder="Doe" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Password</label>
+          <input type="password" id="auth-password" required placeholder="••••••••" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+        </div>
+        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 rounded-lg transition shadow-lg mt-2 text-sm">Continue to Portal</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ADMIN PASSWORD MODAL -->
+  <div id="admin-pass-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 max-w-sm w-full shadow-2xl relative">
+      <button onclick="window.closeAdminModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+      <div class="text-center mb-6">
+        <div class="w-12 h-12 bg-amber-500 text-slate-950 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg font-bold text-xl"><i class="fa-solid fa-key"></i></div>
+        <h3 class="text-xl font-bold text-white">Admin Authentication</h3>
+      </div>
+      <form onsubmit="window.verifyAdminPassword(event)" class="space-y-4">
+        <div>
+          <input type="password" id="admin-pass-input" required placeholder="Enter password..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
+          <p id="admin-pass-error" class="hidden text-red-400 text-xs mt-1 font-medium">Incorrect admin password.</p>
+        </div>
+        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2.5 rounded-lg transition shadow-lg text-sm">Unlock Admin Panel</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- EMBEDDED IFRAME WORKSPACE MODAL -->
+  <div id="iframe-viewer-modal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex flex-col no-select">
+    <div class="bg-slate-900 border-b border-slate-800 px-4 py-3 flex items-center justify-between flex-wrap gap-2 shadow-md">
+      <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white text-sm">
+          <i id="viewer-icon" class="fa-solid fa-globe"></i>
+        </div>
+        <div>
+          <h4 id="viewer-title" class="font-bold text-white text-sm">Educational Site</h4>
+          <div class="flex items-center gap-2">
+            <span id="viewer-category" class="text-[10px] bg-slate-800 text-indigo-400 border border-indigo-500/30 px-2 py-0.5 rounded-full font-semibold">Protected Stream</span>
+            <span id="viewer-active-source-badge" class="text-[10px] bg-slate-800 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-semibold">Main Server</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <button id="viewer-mirror-btn" onclick="window.toggleViewerMirrorSource()" class="hidden text-xs bg-amber-500/10 text-amber-400 border border-amber-500/30 hover:bg-amber-500/20 px-2.5 py-1.5 rounded-lg font-semibold transition">
+          <i class="fa-solid fa-shuffle mr-1"></i> Switch to Mirror URL
+        </button>
+
+        <div id="viewer-star-rating-box" class="flex items-center space-x-1 bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700">
+          <span class="text-xs text-slate-400 mr-1">Rate:</span>
+          <button onclick="window.submitSiteRating(1)" class="text-amber-400 hover:scale-125 transition"><i class="fa-solid fa-star text-xs"></i></button>
+          <button onclick="window.submitSiteRating(2)" class="text-amber-400 hover:scale-125 transition"><i class="fa-solid fa-star text-xs"></i></button>
+          <button onclick="window.submitSiteRating(3)" class="text-amber-400 hover:scale-125 transition"><i class="fa-solid fa-star text-xs"></i></button>
+          <button onclick="window.submitSiteRating(4)" class="text-amber-400 hover:scale-125 transition"><i class="fa-solid fa-star text-xs"></i></button>
+          <button onclick="window.submitSiteRating(5)" class="text-amber-400 hover:scale-125 transition"><i class="fa-solid fa-star text-xs"></i></button>
+        </div>
+
+        <button onclick="window.toggleFullscreen()" class="text-slate-400 hover:text-white px-2.5 py-1.5 rounded-lg text-xs bg-slate-800 border border-slate-700 hover:bg-slate-700 transition">
+          <i class="fa-solid fa-expand mr-1"></i> Fullscreen
+        </button>
+        <button onclick="window.closeIframeViewer()" class="bg-red-600/20 hover:bg-red-600/40 text-red-400 border border-red-500/30 px-3 py-1.5 rounded-lg text-xs font-semibold transition">
+          <i class="fa-solid fa-xmark mr-1"></i> Exit Workspace
+        </button>
+      </div>
+    </div>
+
+    <div class="flex-grow relative bg-slate-950" oncontextmenu="return false;">
+      <iframe id="main-iframe" class="w-full h-full border-none" allow="autoplay; encrypted-media; fullscreen"></iframe>
+      <div id="iframe-loader" class="absolute inset-0 bg-slate-950 flex flex-col items-center justify-center text-center p-6 space-y-4">
+        <div class="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-sm font-semibold text-slate-300">Connecting to secure stream portal...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Entry Script Module -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
